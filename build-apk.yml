@@ -1,0 +1,188 @@
+name: Build APK
+on:
+  workflow_dispatch:
+  push:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Susun proyek Android
+        run: |
+          set -e
+          H=$(ls *.html 2>/dev/null | head -n1)
+          [ -n "$H" ] || { echo "ERROR: file .html belum diunggah ke repo"; exit 1; }
+          mkdir -p app/src/main/java/id/monopostolab/app app/src/main/assets/www app/src/main/res/mipmap-xxxhdpi
+          cp "$H" app/src/main/assets/www/index.html
+          echo "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" | base64 -d > app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          cat > settings.gradle <<'MLAB_EOF'
+          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          dependencyResolutionManagement { repositories { google(); mavenCentral() } }
+          rootProject.name = 'MonopostoLab'
+          include ':app'
+          MLAB_EOF
+          cat > build.gradle <<'MLAB_EOF'
+          plugins { id 'com.android.application' version '8.5.2' apply false }
+          MLAB_EOF
+          cat > gradle.properties <<'MLAB_EOF'
+          android.useAndroidX=true
+          org.gradle.jvmargs=-Xmx2g
+          MLAB_EOF
+          cat > app/build.gradle <<'MLAB_EOF'
+          plugins { id 'com.android.application' }
+          android {
+            namespace 'id.monopostolab.app'
+            compileSdk 34
+            defaultConfig { applicationId 'id.monopostolab.app'; minSdk 29; targetSdk 34; versionCode 139; versionName '1.39' }
+            compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+          }
+          dependencies { implementation 'androidx.webkit:webkit:1.11.0' }
+          MLAB_EOF
+          cat > app/src/main/AndroidManifest.xml <<'MLAB_EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+            <application android:label="MonopostoLab" android:icon="@mipmap/ic_launcher" android:allowBackup="true" android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+              <activity android:name=".MainActivity" android:exported="true" android:windowSoftInputMode="adjustResize" android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode">
+                <intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter>
+              </activity>
+            </application>
+          </manifest>
+          MLAB_EOF
+          cat > app/src/main/java/id/monopostolab/app/MainActivity.java <<'MLAB_EOF'
+          package id.monopostolab.app;
+
+          import android.app.Activity;
+          import android.content.ContentValues;
+          import android.content.Intent;
+          import android.graphics.Color;
+          import android.net.Uri;
+          import android.os.Bundle;
+          import android.os.Environment;
+          import android.provider.MediaStore;
+          import android.util.Base64;
+          import android.webkit.DownloadListener;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.URLUtil;
+          import android.webkit.ValueCallback;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebResourceResponse;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import android.widget.Toast;
+          import androidx.webkit.WebViewAssetLoader;
+          import java.io.OutputStream;
+
+          public class MainActivity extends Activity {
+              private WebView web;
+              private ValueCallback<Uri[]> chooser;
+              private static final int REQ = 7;
+              private static final String HOST = "appassets.androidplatform.net";
+
+              public class Bridge {
+                  @JavascriptInterface public void exit() { runOnUiThread(new Runnable() { public void run() { finish(); } }); }
+                  @JavascriptInterface public void saveBase64(String name, String b64, String mime) { save(name, Base64.decode(b64, Base64.DEFAULT), mime); }
+              }
+
+              @Override protected void onCreate(Bundle b) {
+                  super.onCreate(b);
+                  getWindow().setStatusBarColor(Color.parseColor("#080D14"));
+                  getWindow().setNavigationBarColor(Color.parseColor("#080D14"));
+                  web = new WebView(this);
+                  web.setBackgroundColor(Color.parseColor("#080D14"));
+                  setContentView(web);
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setDatabaseEnabled(true);
+                  s.setAllowFileAccess(false);
+                  final WebViewAssetLoader loader = new WebViewAssetLoader.Builder()
+                      .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this)).build();
+                  web.setWebViewClient(new WebViewClient() {
+                      @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
+                          return loader.shouldInterceptRequest(r.getUrl());
+                      }
+                      @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                          Uri u = r.getUrl();
+                          if (HOST.equals(u.getHost())) return false;
+                          try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e) { }
+                          return true;
+                      }
+                  });
+                  web.setWebChromeClient(new WebChromeClient() {
+                      @Override public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
+                          if (chooser != null) chooser.onReceiveValue(null);
+                          chooser = cb;
+                          try { startActivityForResult(p.createIntent(), REQ); }
+                          catch (Exception e) { chooser = null; return false; }
+                          return true;
+                      }
+                  });
+                  web.addJavascriptInterface(new Bridge(), "AndroidApp");
+                  web.setDownloadListener(new DownloadListener() {
+                      public void onDownloadStart(String url, String ua, String cd, String mime, long len) {
+                          if (!url.startsWith("blob:")) return;
+                          if (mime == null || mime.length() == 0) mime = "application/octet-stream";
+                          String name = (cd != null && cd.contains("filename")) ? URLUtil.guessFileName(url, cd, mime)
+                              : "MonopostoLab-" + (System.currentTimeMillis() / 1000) + (mime.contains("json") ? ".json" : ".txt");
+                          name = name.replace("'", "").replace("\\", "");
+                          String js = "fetch('" + url + "').then(function(r){return r.blob()}).then(function(b){var f=new FileReader();"
+                              + "f.onload=function(){AndroidApp.saveBase64('" + name + "',String(f.result).split(',')[1],'" + mime + "')};f.readAsDataURL(b)})";
+                          web.evaluateJavascript(js, null);
+                      }
+                  });
+                  web.loadUrl("https://" + HOST + "/assets/www/index.html");
+              }
+
+              private void save(String name, byte[] data, String mime) {
+                  try {
+                      ContentValues v = new ContentValues();
+                      v.put(MediaStore.Downloads.DISPLAY_NAME, name);
+                      v.put(MediaStore.Downloads.MIME_TYPE, mime);
+                      v.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+                      Uri u = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+                      OutputStream o = getContentResolver().openOutputStream(u);
+                      o.write(data);
+                      o.close();
+                      toast("Tersimpan di folder Download: " + name);
+                  } catch (Exception e) {
+                      toast("Gagal menyimpan file");
+                  }
+              }
+
+              private void toast(final String m) {
+                  runOnUiThread(new Runnable() { public void run() { Toast.makeText(MainActivity.this, m, Toast.LENGTH_LONG).show(); } });
+              }
+
+              @Override protected void onActivityResult(int rq, int rs, Intent d) {
+                  if (rq == REQ && chooser != null) {
+                      chooser.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(rs, d));
+                      chooser = null;
+                  } else super.onActivityResult(rq, rs, d);
+              }
+
+              @Override public void onBackPressed() {
+                  if (web.canGoBack()) web.goBack(); else finish();
+              }
+          }
+          MLAB_EOF
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+      - name: Bangun APK
+        run: gradle assembleDebug --no-daemon
+      - name: Buat Release berisi APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "v1.${{ github.run_number }}" app/build/outputs/apk/debug/app-debug.apk --target "$GITHUB_SHA" --title "MonopostoLab APK #${{ github.run_number }}" --notes "Unduh app-debug.apk lalu instal."
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MonopostoLab-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
